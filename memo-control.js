@@ -22,7 +22,7 @@ var MemoProcessIdx = {
 
   var memo = function(func) {
 
-    var appendMemo = function(i, s) {
+    function appendMemo(i, s) {
         var lines = s.split(/\r\n|\n|\r/gm);
 
         var flagInfo = {};
@@ -45,13 +45,13 @@ var MemoProcessIdx = {
           getMemoBody(m, flagInfo) +
           getSpaceDiv(i);
         return html;
-      },
+      };
 
-      getSpaceDiv = function(i) {
+      function getSpaceDiv(i) {
         return "<div onclick='MemoControl().moveMemoTo(" + (i + 1) + ")' class='space'></div>"
-      },
+      };
 
-      getFlagInfo = function(j, m, lines, flagInfo) {
+      function getFlagInfo(j, m, lines, flagInfo) {
 
         var rtn = m;
 
@@ -79,9 +79,9 @@ var MemoProcessIdx = {
           flagInfo["highLight"] = true;
         }
         return rtn;
-      },
+      };
 
-      getMemoBody = function(m, flagInfo) {
+      function getMemoBody(m, flagInfo) {
         var b = m;
         if (flagInfo["headLine"]) {
           b = b.replace(/^\*.+\n/, '');
@@ -90,9 +90,9 @@ var MemoProcessIdx = {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
         }
         return b.replace(/[\-]+\n/g, "</div><hr><div>").replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
-      },
+      };
 
-      getMemoDivHead = function(flagInfo) {
+      function getMemoDivHead(flagInfo) {
         var rtn = "<div class='";
 
         if (flagInfo["longMemo"] || flagInfo["longLine"]) {
@@ -111,9 +111,9 @@ var MemoProcessIdx = {
           rtn = rtn + "lowpriority ";
         }
         return rtn + "'>";
-      },
+      };
 
-      makeMemoLink = function(line, flagInfo) {
+      function makeMemoLink(line, flagInfo) {
         if (flagInfo["link"]) {
           var match = line.match(/(.*)\((.*)\)/);
           if (match != undefined) {
@@ -127,17 +127,17 @@ var MemoProcessIdx = {
             }
           }
         }
-      },
+      };
 
-      getHeadLine = function(line, flagInfo) {
+      function getHeadLine(line, flagInfo) {
         if (flagInfo["headLine"]) {
           return line.replace(/^\*/, '');
         } else {
           return "&nbsp;";
         }
-      },
+      };
 
-      convertToDoItem = function(m, line, i, j, flagInfo) {
+      function convertToDoItem(m, line, i, j, flagInfo) {
         if (line.startsWith("[]") || line.startsWith("[v]")) {
           flagInfo["todo"] = true;
           var delCheck = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>"
@@ -151,29 +151,29 @@ var MemoProcessIdx = {
         } else {
           return m;
         }
-      },
+      };
 
-      getModDiv = function(i) {
+      function getModDiv(i) {
         return "<div onclick='MemoControl().mod(" + i + ")'; style='text-align:left; float:left'>[..]</div>";
-      },
+      };
 
-      getHeadDiv = function(headLine, i) {
+      function getHeadDiv(headLine, i) {
         var headClass = "memoHead";
         if (encodeURIComponent(headLine).replace(/%../g, "x").length > 60) {
           headClass = "memoHead longMemoHead";
         }
         return "<div onclick='MemoControl().moveMemoFrom(" + i + ")' class='" + headClass + "'>" + headLine + "</div>";
-      },
+      };
 
-      getDelDiv = function(i, flagInfo) {
+      function getDelDiv(i, flagInfo) {
         if (!flagInfo["lock"]) {
           return "<div onclick='MemoControl().del(" + i + ")'; style='text-align:right;'>[X]</div>";
         } else {
           return "<div style='text-align:right;'>[L]</div>";
         }
-      },
+      };
 
-      del = function(i) {
+      function del(i) {
         var result = confirm('delete?');
         if (result) {
           var a = JSON.parse(localStorage.memo);
@@ -181,9 +181,9 @@ var MemoProcessIdx = {
           localStorage.memo = JSON.stringify(a);
           location.href = location.href;
         }
-      },
+      };
 
-      moveMemoTo = function(idx) {
+      function moveMemoTo(idx) {
         var a = JSON.parse(localStorage.memo);
         var fromIdx = MemoProcessIdx.moveMemoFromIndex;
         var toIdx = idx;
@@ -194,13 +194,13 @@ var MemoProcessIdx = {
         a.splice(toIdx, 0, target);
         localStorage.memo = JSON.stringify(a);
         location.href = location.href;
-      },
+      };
 
-      moveMemoFrom = function(idx) {
+      function moveMemoFrom(idx) {
         MemoProcessIdx.moveMemoFromIndex = idx;
-      },
+      };
 
-      mod = function(i) {
+      function mod(i) {
         var a = JSON.parse(localStorage.memo);
         var s = a[i];
         $('#areaValue').val(s);
@@ -209,9 +209,9 @@ var MemoProcessIdx = {
         $('#modify').show();
         $('#areaValue').focus();
         MemoProcessIdx.modIndex = i;
-      },
+      };
 
-      check = function(i, j) {
+      function check(i, j) {
         var a = JSON.parse(localStorage.memo);
         var s = a[i];
         var lines = s.split(/\r\n|\n|\r/gm);
@@ -223,9 +223,9 @@ var MemoProcessIdx = {
         a[i] = s.replace(before, after);
         localStorage.memo = JSON.stringify(a);
         location.href = location.href;
-      },
+      };
 
-      uncheck = function(i, j) {
+      function uncheck(i, j) {
         var a = JSON.parse(localStorage.memo);
         var s = a[i];
         var lines = s.split(/\r\n|\n|\r/gm);
@@ -237,9 +237,9 @@ var MemoProcessIdx = {
         a[i] = s.replace(before, after);
         localStorage.memo = JSON.stringify(a);
         location.href = location.href;
-      },
+      };
 
-      delcheck = function(i, j) {
+      function delcheck(i, j) {
         var a = JSON.parse(localStorage.memo);
         var s = a[i];
         var lines = s.split(/\r\n|\n|\r/gm);
@@ -250,9 +250,9 @@ var MemoProcessIdx = {
         a[i] = s.replace(before, "").replace(/[\r\n]+/g, "\n");
         localStorage.memo = JSON.stringify(a);
         location.href = location.href;
-      },
+      };
 
-      init = function() {
+	    function init() {
         if (!localStorage.memo) {
           localStorage.memo = JSON.stringify([]);
         }
