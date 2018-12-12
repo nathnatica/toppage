@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<link href="style.css" rel="stylesheet" type="text/css">
+    <script src="lib/jquery-1.8.3.min.js"></script>
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/angular-sanitize.min.js"></script>
+    <script src="lib/ui-utils.js"></script>
+	<script src="lib/notify.js"></script>
+	<script src="calendar/moment.js"></script>
+	<script src="storage-control.js"></script>
+	<script src="memo-control.js"></script>
+	<script src="screen-control.js"></script>
+	<script src="notify-control.js"></script>
+	<script src="config-control.js"></script>
+	<script src="main.js"></script>
+</head>
+<body ng-app="mainModule">
+
+<div id="popup_outer">
+	<div id="popup_inner">
+		<div class="pop_contents">
+			<span id="backupData" class="link">[カレンダー情報をバックアップ]</span><br>
+			<span id="applyData" class="link">[カレンダー情報のバックアップファイルを適用]</span>&nbsp;<input type="file" id="fileInput" style="border-width:1px;border-style: solid;"><br>
+			<span id="deleteOldData" class="link">[古いカレンダー情報を削除（6ヶ月以上前）]</span><br>
+			<span class="normal">- カレンダー名変更(カレンダー番号は上から順番に1,2,3...)</span><br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="text" id="configKey" placeholder="カレンダー番号">&nbsp;
+			<input type="text" id="configValue" placeholder="カレンダー名">&nbsp;
+			<span id="changeButton" class="link">[変更]</span><br>
+			<div class="close" onclick="ScreenControl().popupClose();">[X]</div>
+		</div>
+	</div>
+</div>
+
+<div ng-controller="mainController">
+    <div class="searchbox">
+        <input id="mainInput" type="text" autofocus="true" ng-model="editValue" ng-keyup="onKeyUp($event)" placeholder=" / | lo | si | pt" style="float:left;" />
+		<div style="float:right;text-align:right;">
+			<a href="calendar.html" target="_blank" class="link"><span>calendar</span></a><br>
+			<br>
+			<span class="link" onclick="ScreenControl().popupDisp();">[+]</span>
+		</div>
+	</div>
+	
+	<!-- <div id="add" class="add">[NEW MEMO]</div> -->
+	<div id="area" class="area" style='display:none'>
+		<textarea id="areaValue" rows="10" cols="120"></textarea><br>
+		<button id="confirm">CONFIRM</button>
+		<button id="modify" style="display:none">MODIFY</button>
+	</div>
+	
+	<div id="note" class="padding2 flex">
+	</div>
+	
+	<div id="lo" class="padding1 hide">
+		<h3>LOCAL</h3>
+		<span ng-bind-html="'loch' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/feature/check/">SESSION CHECK</a>
+		<span ng-bind-html="'locc' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/monitor/cachestats.jsp?REGION=uq-code-region">CODE_CACHE_CHECK</a>
+		<span ng-bind-html="'locl' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/monitor/clearcache.jsp?REGION=uq-code-region">CODE_CACHE_CLEAR</a>
+		<span ng-bind-html="'lolo' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/feature/check/login.jsp">LOGIN</a>
+		<span ng-bind-html="'loca' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/FSC03010SCR.do">CART</a>
+		<span ng-bind-html="'lol3' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/list/sale/men">L3</a>
+		<span ng-bind-html="'lol4' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/goods/990501">L4(990501)</a>
+		<span ng-bind-html="'lo55' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/FSC05510SCR.do">FSC05510</a>
+		<span ng-bind-html="'load' | highlight:editValue:caseSensitive"></span>
+		<a href="http://localhost/adminjp/">ADMIN(parksungho/parksungho)</a>
+		<span ng-bind-html="'lo5610' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/FSC05610SCR.do">MAIL MAGA</a>
+		<span ng-bind-html="'lodr' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/driver2/restfulAPI_driver.html">API_DRIVER</a>
+		<span ng-bind-html="'lomailapi' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsi2b.testgds.jp/jp/store/ApiRegMailMemberInfo.do?format=json&email=parksungho@uniqlo.com&type01=Y&type02=N&automail=N">MAIL MAGA REGIST API(parksungho@uniqlo.com 01=Y 02=N)</a>
+		<span ng-bind-html="'lobg' | highlight:editValue:caseSensitive"></span>
+		<a href="http://192.168.1.127:9090/bluegate-stub/">BG STUB</a>
+	</div>
+	<div id="sia" class="padding1 hide">
+		<h3>SIa</h3>
+		<span ng-bind-html="'siaca' | highlight:editValue:caseSensitive"></span>
+		<a href="http://wwwsia.testgds.jp/jp/store/FSC03010SCR.do">CART</a>
+		<span ng-bind-html="'siaad' | highlight:editValue:caseSensitive"></span>
+		<a href="https://storeadminsia.testgds.jp/adminjp/">ADMIN(TestUser/TestUser)</a>
+		<span ng-bind-html="'siach' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsia.testgds.jp/jp/store/feature/check/">CHECK</a>
+		<span ng-bind-html="'siadr' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsia.testgds.jp/jp/store/include_html/restfulAPI_driver.html">API_DRIVER</a>
+		<span ng-bind-html="'siapr' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsia.testgds.jp/jp/store/feature/PayInStoreStub/OrderFixRequestAPI.html">PAYINSTORE_DRIVER</a>
+		<span ng-bind-html="'siabm' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsia.testgds.jp/jp/store/include_html/BlueGatemock.html">BLUEGATE_MOCK</a>
+
+		<div style="width: 300px">
+			<table>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.16.71</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.16.86</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.16.76</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="sib" class="padding1 hide">
+		<h3>SIb</h3>
+		<span ng-bind-html="'sibca' | highlight:editValue:caseSensitive"></span>
+		<a href="http://wwwsib.testgds.jp/jp/store/FSC03010SCR.do">CART</a>
+		<span ng-bind-html="'sibl3' | highlight:editValue:caseSensitive"></span>
+		<a href="http://wwwsib.testgds.jp/jp/store/list/basic/men/tops/jacket">L3</a>
+		<span ng-bind-html="'sibgu' | highlight:editValue:caseSensitive"></span>
+		<a href="http://wwwsib.testgds.jp/jp/store/goods/420102">GU</a>
+		<span ng-bind-html="'sibad' | highlight:editValue:caseSensitive"></span>
+		<a href="https://storeadminsib.testgds.jp/adminjp/">ADMIN(TestUser/TestUser)</a>
+		<span ng-bind-html="'sibch' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsib.testgds.jp/jp/store/feature/check/">CHECK</a>
+		<span ng-bind-html="'sibdr' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsib.testgds.jp/jp/store/include_html/restfulAPI_driver.html">API_DRIVER</a>
+		<span ng-bind-html="'sibpr' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsib.testgds.jp/jp/store/feature/PayInStoreStub/OrderFixRequestAPI.html">PAYINSTORE_DRIVER</a>
+		<span ng-bind-html="'sibbm' | highlight:editValue:caseSensitive"></span>
+		<a href="https://wwwsib.testgds.jp/jp/store/include_html/BlueGatemock.html">BLUEGATE_MOCK</a>
+
+		<div style="width: 300px">
+			<table>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.17.71</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.17.86</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+					<td>ssh tomcat@10.207.17.76</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="pta" class="padding1 hide">
+		<h3>PTa</h3>
+		<span ng-bind-html="'ptaca' | highlight:editValue:caseSensitive"></span>
+		<a href="https://test.uniqlo.com/jp/store/FSC03010SCR.do">CART</a>
+		<span ng-bind-html="'ptal3' | highlight:editValue:caseSensitive"></span>
+		<a href="https://test.uniqlo.com/jp/store/list/sale/men">sale/men</a>
+		<span ng-bind-html="'ptaad' | highlight:editValue:caseSensitive"></span>
+		<a href="https://storeadminpta.testgds.jp/adminjp/">ADMIN</a>
+
+		<div style="width: 300px">
+			<table>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.18.71</td>
+				</tr>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.18.72</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.18.86</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.16.87</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.18.76</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.18.77</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="ptb" class="padding1 hide">
+		<h3>PTb</h3>
+		<span ng-bind-html="'ptbca' | highlight:editValue:caseSensitive"></span>
+		<a href="https://stresstest.uniqlo.com/jp/store/FSC03010SCR.do">CART</a>
+		<span ng-bind-html="'ptbl3' | highlight:editValue:caseSensitive"></span>
+		<a href="https://stresstest.uniqlo.com/jp/store/list/sale/men">sale/men</a>
+		<span ng-bind-html="'ptbad' | highlight:editValue:caseSensitive"></span>
+		<a href="https://storeadminptb.testgds.jp/adminjp/">ADMIN</a>
+
+		<div style="width: 300px">
+			<table>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.20.11</td>
+				</tr>
+				<tr>
+					<td>FRONT </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.20.12</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.20.111</td>
+				</tr>
+				<tr>
+					<td>CENTRAL </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.20.112</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;01&nbsp;</td>
+					<td>ssh tomcat@10.207.20.91</td>
+				</tr>
+				<tr>
+					<td>ADMIN </td>
+					<td>&nbsp;02&nbsp;</td>
+					<td>ssh tomcat@10.207.20.92</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+        
