@@ -24,14 +24,17 @@ if (!String.prototype.startsWith) {
     module.exports = factory();
   } else {
     // Browser globals (global is window)
-    global.ScreenControl = factory();
+    // TODO parksungho for running in angular module()
+    // global.ScreenControl = factory();
   }
+  // TODO parksungho for running in angular module()
+  global.ScreenControl = factory();
 }(this, function() {
   "use strict";
 
   var screen = function(func) {
 
-    var init = function() {
+    function init() {
         // init for highlight links
         $('div.padding1 > span').each(function() {
           var text = $(this).text();
@@ -51,23 +54,23 @@ if (!String.prototype.startsWith) {
             popupResize();
           }, 1000);
         });
-      },
+      };
 
-      popupDisp = function() {
+      function popupDisp() {
         $('#popup_outer').css('display', 'table');
         $('#popup_inner').css('display', 'table-cell');
         $('.pop_contents').css('display', 'block');
-      },
+      };
 
-      popupClose = function() {
+      function popupClose() {
         $('#popup_outer, #popup_inner .pop_contents').css('display', 'none');
-      },
+      };
 
-      popupResize = function() {
+      function popupResize() {
         $('#popup_outer').width('100%').height('100%');
-      },
+      };
 
-      showAllNoteFirst = function(value) {
+      function showAllNoteFirst(value) {
         $('div').filter('[id]').hide();
         if (value.length <= 1) {
           $('#note').show();
@@ -76,9 +79,9 @@ if (!String.prototype.startsWith) {
           });
           $('#add').show();
         }
-      },
+      };
 
-      searchNote = function(value) {
+      function searchNote(value) {
         if (value.startsWith('/') || value.startsWith('・')) { // if search keyword
           var searchValue = value.replace(/^\//, '').replace(/^・/, '');
           $('#note > div').each(function() {
@@ -92,18 +95,18 @@ if (!String.prototype.startsWith) {
             });
           }
         }
-      },
+      };
 
-      showMatchingLink = function(value) {
+      function showMatchingLink(value) {
         for (var i = 2; i <= 5; i++) {
           if (value.length >= i) {
             $('div[id="' + value.substring(0, i) + '"]').not('#area').show();
           }
         }
         $('div[id^="' + value + '"]').not('#area').show();
-      },
+      };
 
-      processEsc = function() {
+      function processEsc() {
         $('#mainInput').focus();
 
         // init memo move
@@ -113,9 +116,9 @@ if (!String.prototype.startsWith) {
         $("div.space").hide();
         MemoProcessIdx.moveMemoFromIndex = -1;
         popupClose();
-      },
+      };
 
-      fireLink = function(value) {
+      function fireLink(value) {
         if (value != null && value.length > 0 && !value.startsWith('/') && !value.startsWith('・')) { // if not search keyword
           var link = document.getElementById(value);
           if (link) {
@@ -125,9 +128,9 @@ if (!String.prototype.startsWith) {
             $('a[id^="' + value + '"]').attr("target", "_blank")[0].click();
           }
         }
-      },
+      };
 
-      processEnter = function(e) {
+      function processEnter(e) {
         if (!$('#mainInput').is(':focus') && !$('#areaValue').is(':focus')) {
           $('#mainInput').focus();
         } else if ($('#areaValue').is(':focus') && e.ctrlKey) { // confirm or modify

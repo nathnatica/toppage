@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 	<link href="style.css" rel="stylesheet" type="text/css">
-    <script src="lib/jquery-1.8.3.min.js"></script>
-    <script src="lib/angular.min.js"></script>
-    <script src="lib/angular-sanitize.min.js"></script>
-    <script src="lib/ui-utils.js"></script>
-	<script src="lib/notify.js"></script>
+  <script src="lib/jquery-1.8.3.min.js"></script>
+  <script src="lib/angular.min.js"></script>
+  <script src="lib/angular-sanitize.min.js"></script>
+  <script src="lib/ui-utils.js"></script>
 	<script src="calendar/moment.js"></script>
-	<script src="storage-control.js"></script>
-	<script src="memo-control.js"></script>
-	<script src="screen-control.js"></script>
-	<script src="notify-control.js"></script>
-	<script src="config-control.js"></script>
-	<script src="main.js"></script>
+  <script data-main="main" src="lib/require.js"></script>
+	<script src="keyup.js"></script>
 </head>
 <body ng-app="mainModule">
 
@@ -43,17 +38,17 @@
 			<span class="link" onclick="ScreenControl().popupDisp();">[+]</span>
 		</div>
 	</div>
-	
+
 	<!-- <div id="add" class="add">[NEW MEMO]</div> -->
 	<div id="area" class="area" style='display:none'>
 		<textarea id="areaValue" rows="10" cols="120"></textarea><br>
 		<button id="confirm">CONFIRM</button>
 		<button id="modify" style="display:none">MODIFY</button>
 	</div>
-	
+
 	<div id="note" class="padding2 flex">
 	</div>
-	
+
 	<div id="lo" class="padding1 hide">
 		<h3>LOCAL</h3>
 		<span ng-bind-html="'loch' | highlight:editValue:caseSensitive"></span>
@@ -250,4 +245,3 @@
 </div>
 </body>
 </html>
-        

@@ -17,7 +17,7 @@
   var control = function() {
 
     var textFile = null;
-    var makeTextFile = function(text) {
+    function makeTextFile(text) {
         var data = new Blob([text], {
           type: 'text/plain'
         });
@@ -28,10 +28,10 @@
 
         textFile = window.URL.createObjectURL(data);
         return textFile;
-      },
+      };
 
       /////////////////// backup //////////////////////////////
-      initBackupLink = function() {
+      function initBackupLink() {
         var backup = document.getElementById('backupData');
         backup.addEventListener('click', function() {
           var data = {};
@@ -49,10 +49,10 @@
             document.body.removeChild(link);
           });
         }, false);
-      },
+      };
 
       /////////////////// apply //////////////////////////////
-      initApplyLink = function() {
+      function initApplyLink() {
         var file = document.getElementById('fileInput');
         file.addEventListener('change', function(evt) {
           var r = new FileReader();
@@ -71,10 +71,10 @@
             }
           }
         }, false);
-      },
+      };
 
       /////////////////// delete old calendar data ////////////////////////
-      initDeleteOldDataLink = function() {
+      function initDeleteOldDataLink() {
         var deleteOld = document.getElementById('deleteOldData');
         deleteOld.addEventListener('click', function() {
           if (window.confirm("delete calendar data?(before 6 month)")) {
@@ -94,9 +94,9 @@
             }
           }
         }, false);
-      },
+      };
 
-      initConfigChangeLink = function() {
+      function initConfigChangeLink() {
         $('#changeButton').click(function() {
           var k = $("#configKey").val();
           var v = $("#configValue").val();
@@ -106,9 +106,9 @@
             $("#configValue").val("");
           }
         });
-      },
+      }
 
-      init = function() {
+      function init() {
         initBackupLink();
         initApplyLink();
         initDeleteOldDataLink();

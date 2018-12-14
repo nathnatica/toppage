@@ -18,13 +18,13 @@
 
     var notifyAddUnit = null;
 
-    var addIfPassed = function addIfPassed(m, now, unit) {
+    function addIfPassed(m, now, unit) {
         if (now.isAfter(m) && notifyAddUnit == null) {
           notifyAddUnit = unit;
         }
-      },
+      };
 
-      notifyShow = function(title, m, now, style) {
+      function notifyShow(title, m, now, style) {
         if (m.isAfter(now)) {
           var days = m.diff(now, 'days');
           var hours = m.diff(now, 'hours');
@@ -49,9 +49,9 @@
         } else if (!now.isAfter(m)) {
           $.notify(title + " (now)", "error");
         }
-      },
+      };
 
-      notifyLoop = function(title, m, style) {
+      function notifyLoop(title, m, style) {
         var timerId = window.setInterval(function() {
           var minutes = m.diff(moment(), 'minutes');
           if (minutes > 0) {
@@ -60,9 +60,9 @@
             clearInterval(timerId);
           }
         }, 10 * 60 * 1000); // every 10 minutes
-      },
+      };
 
-      init = function() {
+      function init() {
         var now = moment();
         if (localStorage.schedule) {
           var ss = JSON.parse(localStorage.schedule);

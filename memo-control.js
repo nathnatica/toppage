@@ -15,8 +15,9 @@ var MemoProcessIdx = {
     module.exports = factory();
   } else {
     // Browser globals (global is window)
-    global.MemoControl = factory();
+    // global.MemoControl = factory();
   }
+  global.MemoControl = factory();
 }(this, function() {
   "use strict";
 
