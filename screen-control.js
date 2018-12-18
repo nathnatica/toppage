@@ -72,7 +72,7 @@ if (!String.prototype.startsWith) {
 
       function showAllNoteFirst(value) {
         $('div').filter('[id]').hide();
-        if (value.length <= 1) {
+        if ($('#mainInput').val().length <= 1) {
           $('#note').show();
           $('#note > div').not(".space").each(function() {
             $(this).show();
