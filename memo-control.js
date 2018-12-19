@@ -42,7 +42,6 @@ var MemoProcessIdx = {
           getHeadDiv(getHeadLine(lines[0], flagInfo), i) +
           getDelDiv(i, flagInfo) +
           "<hr>" +
-          getMemoDivHead(flagInfo) +
           getMemoBody(m, flagInfo) +
           getSpaceDiv(i);
         return html;
@@ -83,6 +82,7 @@ var MemoProcessIdx = {
       };
 
       function getMemoBody(m, flagInfo) {
+        var divHead = getMemoDivHead(flagInfo);
         var b = m;
         if (flagInfo["headLine"]) {
           b = b.replace(/^\*.+\n/, '');
@@ -90,7 +90,8 @@ var MemoProcessIdx = {
         if (!flagInfo["todo"]) {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
         }
-        return b.replace(/[\-]+\n/g, "</div><hr><div>").replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
+        // return divHead + b.replace(/[\-]+\n/g, "</div><hr>" + divHead).replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
+        return divHead + b.replace(/[\-]+\n/g, "<hr>").replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
       };
 
       function getMemoDivHead(flagInfo) {
