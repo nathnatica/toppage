@@ -39,18 +39,17 @@ var MemoProcessIdx = {
           m = convertDictItem(m, lines[j], i, j, flagInfo);
         }
 
-        var html = "<div>" +
-          getModDiv(i) +
-          getHeadDiv(getHeadLine(lines[0], flagInfo), i) +
-          getDelDiv(i, flagInfo) +
-          "<hr>" +
-          getMemoBody(m, flagInfo) +
-          getSpaceDiv(i);
+        var html = $("<div></div>")
+          .append(getModDiv(i))
+          .append(getHeadDiv(getHeadLine(lines[0], flagInfo), i))
+          .append(getDelDiv(i, flagInfo))
+          .append($("<hr>"))
+          .append(getMemoBody(m, flagInfo));
         return html;
       };
 
       function getSpaceDiv(i) {
-        return "<div onclick='MemoControl().moveMemoTo(" + (i + 1) + ")' class='space'></div>"
+        return $("<div></div>").attr("onclick","MemoControl().moveMemoTo(" + (i + 1) + ")").addClass("space");
       };
 
       function getFlagInfo(j, m, lines, flagInfo) {
@@ -95,28 +94,27 @@ var MemoProcessIdx = {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
         }
         // return divHead + b.replace(/[\-]+\n/g, "</div><hr>" + divHead).replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
-        return divHead + b.replace(/[\-]+\n/g, "<hr>").replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
+        return divHead.html(b.replace(/[\-]+\n/g, "<hr>").replace(new RegExp('\n', 'g'), '<br>'));
       };
 
       function getMemoDivHead(flagInfo) {
-        var rtn = "<div class='";
-
+        var rtn = $("<div></div>");
         if (flagInfo["longMemo"] || flagInfo["longLine"]) {
-          rtn = rtn + "long ";
+          rtn.addClass("long");
           if (flagInfo["longMemo"]) {
-            rtn = rtn + "scroll ";
+            rtn.addClass("scroll");
           }
         }
         if (flagInfo["highLight"]) {
-          rtn = rtn + "highlight ";
+          rtn.addClass("highlight");
         }
         if (flagInfo["hide"]) {
-          rtn = rtn + "invisible ";
+          rtn.addClass("invisible");
         }
         if (flagInfo["lowp"]) { // low priority memo
-          rtn = rtn + "lowpriority ";
+          rtn.addClass("lowpriority");
         }
-        return rtn + "'>";
+        return rtn;
       };
 
       function makeMemoLink(line, flagInfo) {
@@ -178,23 +176,26 @@ var MemoProcessIdx = {
       };
 
       function getModDiv(i) {
-        return "<div onclick='MemoControl().mod(" + i + ")'; style='text-align:left; float:left'>[..]</div>";
+        return $("<div></div>")
+        .attr("onclick", "MemoControl().mod(" + i + ")")
+        .attr("style", "text-align:left; float:left")
+        .text("[..]");
       };
 
       function getHeadDiv(headLine, i) {
         var headClass = "memoHead";
-        if (encodeURIComponent(headLine).replace(/%../g, "x").length > 60) {
+        if (encodeURIComponent(headLine).replace(/%../g, "x").length > 60) { // if long head
           headClass = "memoHead longMemoHead";
         }
-        return "<div onclick='MemoControl().moveMemoFrom(" + i + ")' class='" + headClass + "'>" + headLine + "</div>";
+        return $("<div></div>").attr("onclick","MemoControl().moveMemoFrom(" + i + ")").text(headLine).addClass(headClass);
       };
 
       function getDelDiv(i, flagInfo) {
+        var t = $("<div></div>").attr("style", "text-align:right").text("[L]");
         if (!flagInfo["lock"]) {
-          return "<div onclick='MemoControl().del(" + i + ")'; style='text-align:right;'>[X]</div>";
-        } else {
-          return "<div style='text-align:right;'>[L]</div>";
+          t.attr("onclick", "MemoControl().del(" + i + ")").text("[X]");
         }
+        return t;
       };
 
       function del(i) {
@@ -295,7 +296,7 @@ var MemoProcessIdx = {
             var s = a[i].toString();
             var memoEle = appendMemo(i, s);
             var noteEle = $("#note");
-            noteEle.append(memoEle);
+            noteEle.append(memoEle).append(getSpaceDiv(i));
           }
         }
 
