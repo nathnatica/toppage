@@ -37,7 +37,13 @@ span.unchecked {
     color: black;
 }
 span.delcheck {
-    background-color: #E6E6E6;
+    /* background-color: #E6E6E6; */
+    font-weight: normal;
+    float: right;
+    color: black;
+}
+span.down {
+    /* background-color: #E6E6E6; */
     font-weight: normal;
     float: right;
     color: black;
@@ -162,11 +168,18 @@ span.word {
     float: left;
     width: 40%;
 }
+div.lowpriority > span.desc {
+    color: #A6A6A6;
+}
 span.desc {
     color: #E6E6E6;
     float: left;
     text-align: right;
-    width: 50%;
+    width: 45%;
+}
+div.lowpriority > span.desc:hover {
+    color: black;
+    font-weight: bold;
 }
 span.desc:hover {
     color: black;

@@ -2,6 +2,7 @@ var MemoProcessIdx = {
   mediumPriorityMemoAddToIdx: 1000,
   moveMemoFromIndex: -1,
   minDictionaryMemoIndex: 9999,
+  backupDictionaryMemoIndex: -1,
   modIndex: -1
 };
 
@@ -65,21 +66,27 @@ var MemoProcessIdx = {
           var flags = flagLine.replace('#', '').split(/,/g);
           for (var i in flags) {
             flagInfo[flags[i]] = true;
-            if (flags[i] == "lowp") { // low proprity memo
-              MemoProcessIdx.mediumPriorityMemoAddToIdx = Math.min(MemoProcessIdx.mediumPriorityMemoAddToIdx, j);
-            } else if (flags[i] == "dict") { // to find first dictionary memo to add new dictionary
-              MemoProcessIdx.minDictionaryMemoIndex = Math.min(MemoProcessIdx.minDictionaryMemoIndex, j);
+          }
+          if (flagInfo["lowp"] == true) { // low proprity memo
+            MemoProcessIdx.mediumPriorityMemoAddToIdx = Math.min(MemoProcessIdx.mediumPriorityMemoAddToIdx, j);
+          } else if (flagInfo["dict"] == true) { // to find first dictionary memo to add new dictionary
+            MemoProcessIdx.minDictionaryMemoIndex = Math.min(MemoProcessIdx.minDictionaryMemoIndex, j);
+            if (flagInfo["backup"] == true) {
+              MemoProcessIdx.backupDictionaryMemoIndex = Math.max(MemoProcessIdx.backupDictionaryMemoIndex, j);
+              flagInfo["lowp"] = true;
             }
           }
           rtn = rtn.replace(/^#.+\n/, '');
         }
 
-        if (lines[0].startsWith('*')) {
-          flagInfo["headLine"] = true;
-        }
+        if (lines[0]) {
+          if (lines[0].startsWith('*')) {
+            flagInfo["headLine"] = true;
+          }
 
-        if (lines[0].startsWith('!')) {
-          flagInfo["highLight"] = true;
+          if (lines[0].startsWith('!')) {
+            flagInfo["highLight"] = true;
+          }
         }
         return rtn;
       };
@@ -99,7 +106,7 @@ var MemoProcessIdx = {
 
       function getMemoDivHead(flagInfo) {
         var rtn = $("<div></div>");
-        if (flagInfo["longMemo"] || flagInfo["longLine"]) {
+        if (flagInfo["longMemo"] || flagInfo["longLine"] || flagInfo["dict"]) {
           rtn.addClass("long");
           if (flagInfo["longMemo"]) {
             rtn.addClass("scroll");
@@ -113,6 +120,9 @@ var MemoProcessIdx = {
         }
         if (flagInfo["lowp"]) { // low priority memo
           rtn.addClass("lowpriority");
+        }
+        if (flagInfo["backup"]) {
+          rtn.addClass("scroll");
         }
         return rtn;
       };
@@ -159,16 +169,19 @@ var MemoProcessIdx = {
 
       function convertDictItem(m, line, i, j, flagInfo) {
         if (flagInfo["dict"]) {
-          var match = line.match(/[ 　]*(.*)[ 　](.*)/);
-          if (match != undefined) {
-            var word = match[1];
-            var desc = match[2];
-            if (word != undefined && desc != undefined) {
-              var delCheck = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
-              var replaced = line.replace(/[ 　]/g, "")
-              .replace(word, "<span class='word'>" + word + "</span>")
-              .replace(desc, "<span class='desc'>" + desc + "</span>") + delCheck;
-              return m.replace(line, replaced);
+          if (!line.startsWith("*")) {
+            var match = line.match(/[ 　]*(.*)[ 　](.*)/);
+            if (match != undefined) {
+              var word = match[1];
+              var desc = match[2];
+              if (word != undefined && desc != undefined) {
+                var downDict = "<span onclick='MemoControl().down(" + i + "," + j + ")' class='down'>[↓]</span>";
+                var delDict = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
+                var replaced = line.replace(/[ 　]/g, "")
+                .replace(word, "<span class='word'>" + word + "</span>")
+                .replace(desc, "<span class='desc'>" + desc + "</span>") + delDict + downDict;
+                return m.replace(line, replaced);
+              }
             }
           }
         }
@@ -187,7 +200,7 @@ var MemoProcessIdx = {
         if (encodeURIComponent(headLine).replace(/%../g, "x").length > 60) { // if long head
           headClass = "memoHead longMemoHead";
         }
-        return $("<div></div>").attr("onclick","MemoControl().moveMemoFrom(" + i + ")").text(headLine).addClass(headClass);
+        return $("<div></div>").attr("onclick","MemoControl().moveMemoFrom(" + i + ")").html(headLine).addClass(headClass);
       };
 
       function getDelDiv(i, flagInfo) {
@@ -277,6 +290,27 @@ var MemoProcessIdx = {
         location.href = location.href;
       };
 
+      function down(i, j) {
+        if (MemoProcessIdx.backupDictionaryMemoIndex > i) {
+          // delete from
+          var a = JSON.parse(localStorage.memo);
+          var from = a[i];
+          var lines = from.split(/\r\n|\n|\r/gm);
+          if (lines[0].startsWith("#")) {
+            lines.shift();
+          }
+          var target = lines[j];
+          a[i] = from.replace(target, "").replace(/[\r\n]+/g, "\n");
+
+          // add to
+          var to = a[MemoProcessIdx.backupDictionaryMemoIndex] + "\n" + target;
+          a[MemoProcessIdx.backupDictionaryMemoIndex] = to.replace(/[\r\n]+/g, "\n");
+
+          localStorage.memo = JSON.stringify(a);
+          location.href = location.href;
+        }
+      };
+
 	    function init() {
         if (!localStorage.memo) {
           localStorage.memo = JSON.stringify([]);
@@ -362,6 +396,7 @@ var MemoProcessIdx = {
       check: check,
       uncheck: uncheck,
       delcheck: delcheck,
+      down: down,
       init: init
     };
   };

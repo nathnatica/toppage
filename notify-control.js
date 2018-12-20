@@ -154,7 +154,7 @@
                 m.add(1, notifyAddUnit);
               }
 
-              console.log("NEXT MEMO SCHEDULE : " + title + "(" + m.local().format() + ")");
+              // console.debug("NEXT MEMO SCHEDULE : " + title + "(" + m.local().format() + ")");
 
               notifyShow(title, m, now, 'success');
             }
