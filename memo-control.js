@@ -1,6 +1,7 @@
 var MemoProcessIdx = {
   mediumPriorityMemoAddToIdx: 1000,
   moveMemoFromIndex: -1,
+  minDictionaryMemoIndex: 9999,
   modIndex: -1
 };
 
@@ -35,6 +36,7 @@ var MemoProcessIdx = {
           }
           makeMemoLink(lines[j], flagInfo);
           m = convertToDoItem(m, lines[j], i, j, flagInfo);
+          m = convertDictItem(m, lines[j], i, j, flagInfo);
         }
 
         var html = "<div>" +
@@ -66,6 +68,8 @@ var MemoProcessIdx = {
             flagInfo[flags[i]] = true;
             if (flags[i] == "lowp") { // low proprity memo
               MemoProcessIdx.mediumPriorityMemoAddToIdx = Math.min(MemoProcessIdx.mediumPriorityMemoAddToIdx, j);
+            } else if (flags[i] == "dict") { // to find first dictionary memo to add new dictionary
+              MemoProcessIdx.minDictionaryMemoIndex = Math.min(MemoProcessIdx.minDictionaryMemoIndex, j);
             }
           }
           rtn = rtn.replace(/^#.+\n/, '');
@@ -87,7 +91,7 @@ var MemoProcessIdx = {
         if (flagInfo["headLine"]) {
           b = b.replace(/^\*.+\n/, '');
         }
-        if (!flagInfo["todo"]) {
+        if (!flagInfo["todo"] && !flagInfo["dict"]) {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
         }
         // return divHead + b.replace(/[\-]+\n/g, "</div><hr>" + divHead).replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
@@ -153,6 +157,24 @@ var MemoProcessIdx = {
         } else {
           return m;
         }
+      };
+
+      function convertDictItem(m, line, i, j, flagInfo) {
+        if (flagInfo["dict"]) {
+          var match = line.match(/[ 　]*(.*)[ 　](.*)/);
+          if (match != undefined) {
+            var word = match[1];
+            var desc = match[2];
+            if (word != undefined && desc != undefined) {
+              var delCheck = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
+              var replaced = line.replace(/[ 　]/g, "")
+              .replace(word, "<span class='word'>" + word + "</span>")
+              .replace(desc, "<span class='desc'>" + desc + "</span>") + delCheck;
+              return m.replace(line, replaced);
+            }
+          }
+        }
+        return m;
       };
 
       function getModDiv(i) {
@@ -300,6 +322,11 @@ var MemoProcessIdx = {
             if (m.startsWith("[]")) { // for TODO list item
               var s = a[0] + "\n" + m;
               a[0] = s.replace(/[\r\n]+/g, '\n');
+              localStorage.memo = JSON.stringify(a);
+              location.href = location.href;
+            } else if ((m.startsWith("??") || m.startsWith("？？")) && MemoProcessIdx.minDictionaryMemoIndex != 9999) { // for dictionay item
+              var s = a[MemoProcessIdx.minDictionaryMemoIndex] + "\n" + m.replace(/[\?？]/g,'');
+              a[MemoProcessIdx.minDictionaryMemoIndex] = s.replace(/[\r\n]+/g, '\n');
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
             } else { // for memo item

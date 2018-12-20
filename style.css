@@ -158,6 +158,21 @@ span.normal {
     text-decoration: none;
 }
 
+span.word {
+    float: left;
+    width: 40%;
+}
+span.desc {
+    color: #E6E6E6;
+    float: left;
+    text-align: right;
+    width: 50%;
+}
+span.desc:hover {
+    color: black;
+    font-weight: bold;
+}
+
 div.flex > div.space {
     display: none;
     background-color: #3CB371;
