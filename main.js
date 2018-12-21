@@ -6,7 +6,7 @@ requirejs.config({
     }
 });
 
-requirejs(["jquery", "notify", "screen-control", "memo-control", "config-control", "notify-control", "storage-control"], function($, n, screen, memo, config, notify, storage) {
+requirejs(["jquery", "notify", "screen-control", "memo-control", "config-control", "notify-control", "storage-control", "index"], function($, n, screen, memo, config, notify, storage) {
 
   $(document).keydown(function(e) { // keypress did not work with ESC
   	var code = e.keyCode || e.which;

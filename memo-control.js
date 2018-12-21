@@ -1,8 +1,6 @@
 var MemoProcessIdx = {
   mediumPriorityMemoAddToIdx: 1000,
   moveMemoFromIndex: -1,
-  minDictionaryMemoIndex: 9999,
-  backupDictionaryMemoIndex: -1,
   modIndex: -1
 };
 
@@ -24,6 +22,7 @@ var MemoProcessIdx = {
   "use strict";
 
   var memo = function(func) {
+    var dictMemoIdx = new Index();
 
     function appendMemo(i, s) {
         var lines = s.split(/\r\n|\n|\r/gm);
@@ -70,9 +69,8 @@ var MemoProcessIdx = {
           if (flagInfo["lowp"] == true) { // low proprity memo
             MemoProcessIdx.mediumPriorityMemoAddToIdx = Math.min(MemoProcessIdx.mediumPriorityMemoAddToIdx, j);
           } else if (flagInfo["dict"] == true) { // to find first dictionary memo to add new dictionary
-            MemoProcessIdx.minDictionaryMemoIndex = Math.min(MemoProcessIdx.minDictionaryMemoIndex, j);
+            dictMemoIdx.add(j);
             if (flagInfo["backup"] == true) {
-              MemoProcessIdx.backupDictionaryMemoIndex = Math.max(MemoProcessIdx.backupDictionaryMemoIndex, j);
               flagInfo["lowp"] = true;
             }
           }
@@ -175,11 +173,12 @@ var MemoProcessIdx = {
               var word = match[1];
               var desc = match[2];
               if (word != undefined && desc != undefined) {
-                var downDict = "<span onclick='MemoControl().down(" + i + "," + j + ")' class='down'>[↓]</span>";
+                var downDict = "<span onclick='MemoControl().down(" + i + "," + j + ")' class='updown'>[↓]</span>";
+                var upDict = "<span onclick='MemoControl().up(" + i + "," + j + ")' class='updown'>[↑]</span>";
                 var delDict = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
                 var replaced = line.replace(/[ 　]/g, "")
                 .replace(word, "<span class='word'>" + word + "</span>")
-                .replace(desc, "<span class='desc'>" + desc + "</span>") + delDict + downDict;
+                .replace(desc, "<span class='desc'>" + desc + "</span>") + delDict + upDict + downDict;
                 return m.replace(line, replaced);
               }
             }
@@ -291,7 +290,17 @@ var MemoProcessIdx = {
       };
 
       function down(i, j) {
-        if (MemoProcessIdx.backupDictionaryMemoIndex > i) {
+        var to = dictMemoIdx.getNext(i);
+        moveMemoLineTo(i, j, to);
+      };
+
+      function up(i, j) {
+        var to = dictMemoIdx.getBefore(i);
+        moveMemoLineTo(i, j, to);
+      };
+
+      function moveMemoLineTo(i, j, to) {
+        if (i != to) {
           // delete from
           var a = JSON.parse(localStorage.memo);
           var from = a[i];
@@ -303,8 +312,8 @@ var MemoProcessIdx = {
           a[i] = from.replace(target, "").replace(/[\r\n]+/g, "\n");
 
           // add to
-          var to = a[MemoProcessIdx.backupDictionaryMemoIndex] + "\n" + target;
-          a[MemoProcessIdx.backupDictionaryMemoIndex] = to.replace(/[\r\n]+/g, "\n");
+          var m = a[to] + "\n" + target;
+          a[to] = m.replace(/[\r\n]+/g, "\n");
 
           localStorage.memo = JSON.stringify(a);
           location.href = location.href;
@@ -342,14 +351,6 @@ var MemoProcessIdx = {
           $("div.space").show();
         });
 
-        // $('#add').click(function() {
-        // $('#areaValue').val("");
-        // $('#area').toggle();
-        // $('#confirm').show();
-        // $('#modify').hide();
-        // $('#areaValue').focus();
-        // });
-
         $('#confirm').click(function() {
           var m = $('#areaValue').val();
           if (m != null && m != "") {
@@ -359,9 +360,10 @@ var MemoProcessIdx = {
               a[0] = s.replace(/[\r\n]+/g, '\n');
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
-            } else if ((m.startsWith("??") || m.startsWith("？？")) && MemoProcessIdx.minDictionaryMemoIndex != 9999) { // for dictionay item
-              var s = a[MemoProcessIdx.minDictionaryMemoIndex] + "\n" + m.replace(/[\?？]/g,'');
-              a[MemoProcessIdx.minDictionaryMemoIndex] = s.replace(/[\r\n]+/g, '\n');
+            } else if ((m.startsWith("??") || m.startsWith("？？")) && dictMemoIdx.size() != 0) { // for dictionay item
+              var firstIdx = dictMemoIdx.getFirst();
+              var s = a[firstIdx] + "\n" + m.replace(/[\?？]/g,'');
+              a[firstIdx] = s.replace(/[\r\n]+/g, '\n');
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
             } else { // for memo item
@@ -397,6 +399,7 @@ var MemoProcessIdx = {
       uncheck: uncheck,
       delcheck: delcheck,
       down: down,
+      up: up,
       init: init
     };
   };

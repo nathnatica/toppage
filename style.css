@@ -42,7 +42,7 @@ span.delcheck {
     float: right;
     color: black;
 }
-span.down {
+span.updown {
     /* background-color: #E6E6E6; */
     font-weight: normal;
     float: right;
@@ -166,7 +166,7 @@ span.normal {
 
 span.word {
     float: left;
-    width: 40%;
+    width: 35%;
 }
 div.lowpriority > span.desc {
     color: #A6A6A6;
@@ -215,7 +215,7 @@ div.memoHead.selected {
 div.memoHead.selected:before {
     color: white;
     font-weight: bold;
-    content: "[MOVE MEMO] ";
+    content: "[移動対象メモ] ";
 }
 
 /**  */
