@@ -11,11 +11,11 @@ angular.module("mainModule", ['ui.utils', 'ngSanitize']).controller("mainControl
 
   $scope.onKeyUp = function($event) {
     var value = $scope.editValue;
-    ScreenControl().showAllNoteFirst();
-    ScreenControl().searchNote(value);
-    ScreenControl().showMatchingLink(value);
+    screenControl.showAllNoteFirst();
+    screenControl.searchNote(value);
+    screenControl.showMatchingLink(value);
     if ($event.which == 13) { // enter
-      ScreenControl().showAllNoteFirst();
+      screenControl.showAllNoteFirst();
     }
   };
 

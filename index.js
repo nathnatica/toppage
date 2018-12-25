@@ -1,18 +1,33 @@
 
 let Index = (function() {
-  let privateProps = new Set();
+  let idxSet = new Set();
+  let idx = -1;
 
    class Index {
-     add(val) {
-       privateProps.add(val);
+     constructor(val) {
+       if (val) {
+         idx = val;
+       }
+     }
+
+     set(val) {
+       idx = val;
+     }
+
+     get() {
+       return idx;
+     }
+
+     addtoSet(val) {
+       idxSet.add(val);
      }
 
      getFirst() {
-       return privateProps.values().next().value;
+       return idxSet.values().next().value;
      }
 
      getNext(val) {
-       for (let v of privateProps) {
+       for (let v of idxSet) {
          if (v > val) {
            return v;
          }
@@ -21,7 +36,7 @@ let Index = (function() {
      }
 
      getBefore(val) {
-       let reversed = new Set(Array.from(privateProps).reverse());
+       let reversed = new Set(Array.from(idxSet).reverse());
        for (let v of reversed) {
          if (v < val) {
            return v;
@@ -31,7 +46,7 @@ let Index = (function() {
      }
 
      size() {
-       return privateProps.size;
+       return idxSet.size;
      }
    }
 

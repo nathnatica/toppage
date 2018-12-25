@@ -1,8 +1,8 @@
-var MemoProcessIdx = {
-  mediumPriorityMemoAddToIdx: 1000,
-  moveMemoFromIndex: -1,
-  modIndex: -1
-};
+// var MemoProcessIdx = {
+//   mediumPriorityMemoAddToIdx: 1000,
+//   moveMemoFromIndex: -1,
+//   modIndex: -1
+// };
 
 (function(global, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -15,14 +15,16 @@ var MemoProcessIdx = {
     module.exports = factory();
   } else {
     // Browser globals (global is window)
-    // global.MemoControl = factory();
+    global.MemoControl = factory();
   }
-  global.MemoControl = factory();
 }(this, function() {
   "use strict";
 
   var memo = function(func) {
     var dictMemoIdx = new Index();
+    var mediumPriorityMemoAddToIdx = new Index(1000),
+    moveMemoFromIndex = new Index(),
+    modIndex = new Index();
 
     function appendMemo(i, s) {
         var lines = s.split(/\r\n|\n|\r/gm);
@@ -49,7 +51,7 @@ var MemoProcessIdx = {
       };
 
       function getSpaceDiv(i) {
-        return $("<div></div>").attr("onclick","MemoControl().moveMemoTo(" + (i + 1) + ")").addClass("space");
+        return $("<div></div>").attr("onclick","memoControl.moveMemoTo(" + (i + 1) + ")").addClass("space");
       };
 
       function getFlagInfo(j, m, lines, flagInfo) {
@@ -67,9 +69,9 @@ var MemoProcessIdx = {
             flagInfo[flags[i]] = true;
           }
           if (flagInfo["lowp"] == true) { // low proprity memo
-            MemoProcessIdx.mediumPriorityMemoAddToIdx = Math.min(MemoProcessIdx.mediumPriorityMemoAddToIdx, j);
+            mediumPriorityMemoAddToIdx = Math.min(mediumPriorityMemoAddToIdx, j);
           } else if (flagInfo["dict"] == true) { // to find first dictionary memo to add new dictionary
-            dictMemoIdx.add(j);
+            dictMemoIdx.addtoSet(j);
             if (flagInfo["backup"] == true) {
               flagInfo["lowp"] = true;
             }
@@ -152,12 +154,12 @@ var MemoProcessIdx = {
       function convertToDoItem(m, line, i, j, flagInfo) {
         if (line.startsWith("[]") || line.startsWith("[v]")) {
           flagInfo["todo"] = true;
-          var delCheck = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>"
+          var delCheck = "<span onclick='memoControl.delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>"
           if (line.startsWith("[]")) {
-            var replaced = line.replace("[]", "<span onclick='MemoControl().check(" + i + "," + j + ")' class='unchecked'>[ ]&nbsp;") + "</span>" + delCheck;
+            var replaced = line.replace("[]", "<span onclick='memoControl.check(" + i + "," + j + ")' class='unchecked'>[ ]&nbsp;") + "</span>" + delCheck;
             return m.replace(line, replaced);
           } else if (line.startsWith("[v]")) {
-            var replaced = line.replace("[v]", "<span onclick='MemoControl().uncheck(" + i + "," + j + ")' class='checked'>[v]&nbsp;") + "</span>" + delCheck;
+            var replaced = line.replace("[v]", "<span onclick='memoControl.uncheck(" + i + "," + j + ")' class='checked'>[v]&nbsp;") + "</span>" + delCheck;
             return m.replace(line, replaced);
           }
         } else {
@@ -168,15 +170,15 @@ var MemoProcessIdx = {
       function convertDictItem(m, line, i, j, flagInfo) {
         if (flagInfo["dict"]) {
           if (!line.startsWith("*")) {
-            var match = line.match(/[ 　]*(.*)[ 　](.*)/);
+            var match = line.match(/^[ 　]*(\S+)[ 　](.*)$/);
             if (match != undefined) {
               var word = match[1];
               var desc = match[2];
               if (word != undefined && desc != undefined) {
-                var downDict = "<span onclick='MemoControl().down(" + i + "," + j + ")' class='updown'>[↓]</span>";
-                var upDict = "<span onclick='MemoControl().up(" + i + "," + j + ")' class='updown'>[↑]</span>";
-                var delDict = "<span onclick='MemoControl().delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
-                var replaced = line.replace(/[ 　]/g, "")
+                var downDict = "<span onclick='memoControl.down(" + i + "," + j + ")' class='updown'>[↓]</span>";
+                var upDict = "<span onclick='memoControl.up(" + i + "," + j + ")' class='updown'>[↑]</span>";
+                var delDict = "<span onclick='memoControl.delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
+                var replaced = line
                 .replace(word, "<span class='word'>" + word + "</span>")
                 .replace(desc, "<span class='desc'>" + desc + "</span>") + delDict + upDict + downDict;
                 return m.replace(line, replaced);
@@ -189,7 +191,7 @@ var MemoProcessIdx = {
 
       function getModDiv(i) {
         return $("<div></div>")
-        .attr("onclick", "MemoControl().mod(" + i + ")")
+        .attr("onclick", "memoControl.mod(" + i + ")")
         .attr("style", "text-align:left; float:left")
         .text("[..]");
       };
@@ -199,13 +201,13 @@ var MemoProcessIdx = {
         if (encodeURIComponent(headLine).replace(/%../g, "x").length > 60) { // if long head
           headClass = "memoHead longMemoHead";
         }
-        return $("<div></div>").attr("onclick","MemoControl().moveMemoFrom(" + i + ")").html(headLine).addClass(headClass);
+        return $("<div></div>").attr("onclick","memoControl.moveMemoFrom(" + i + ")").html(headLine).addClass(headClass);
       };
 
       function getDelDiv(i, flagInfo) {
         var t = $("<div></div>").attr("style", "text-align:right").text("[L]");
         if (!flagInfo["lock"]) {
-          t.attr("onclick", "MemoControl().del(" + i + ")").text("[X]");
+          t.attr("onclick", "memoControl.del(" + i + ")").text("[X]");
         }
         return t;
       };
@@ -222,7 +224,7 @@ var MemoProcessIdx = {
 
       function moveMemoTo(idx) {
         var a = JSON.parse(localStorage.memo);
-        var fromIdx = MemoProcessIdx.moveMemoFromIndex;
+        var fromIdx = moveMemoFromIndex.get();
         var toIdx = idx;
         if (toIdx > fromIdx) {
           toIdx = toIdx - 1;
@@ -234,7 +236,7 @@ var MemoProcessIdx = {
       };
 
       function moveMemoFrom(idx) {
-        MemoProcessIdx.moveMemoFromIndex = idx;
+        moveMemoFromIndex.set(idx);
       };
 
       function mod(i) {
@@ -245,7 +247,7 @@ var MemoProcessIdx = {
         $('#confirm').hide();
         $('#modify').show();
         $('#areaValue').focus();
-        MemoProcessIdx.modIndex = i;
+        modIndex.set(i);
       };
 
       function check(i, j) {
@@ -367,10 +369,10 @@ var MemoProcessIdx = {
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
             } else { // for memo item
-              if (a.length - 1 < MemoProcessIdx.mediumPriorityMemoAddToIdx) {
+              if (a.length - 1 < mediumPriorityMemoAddToIdx) {
                 a.push(m);
               } else {
-                a.splice(MemoProcessIdx.mediumPriorityMemoAddToIdx, 0, m);
+                a.splice(mediumPriorityMemoAddToIdx, 0, m);
               }
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
@@ -382,7 +384,7 @@ var MemoProcessIdx = {
           var m = $('#areaValue').val();
           if (m != null && m != "") {
             a = JSON.parse(localStorage.memo);
-            a[MemoProcessIdx.modIndex] = m;
+            a[modIndex.get()] = m;
             localStorage.memo = JSON.stringify(a);
             location.href = location.href;
           }

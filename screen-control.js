@@ -24,11 +24,8 @@ if (!String.prototype.startsWith) {
     module.exports = factory();
   } else {
     // Browser globals (global is window)
-    // TODO parksungho for running in angular module()
-    // global.ScreenControl = factory();
+    global.ScreenControl = factory();
   }
-  // TODO parksungho for running in angular module()
-  global.ScreenControl = factory();
 }(this, function() {
   "use strict";
 
@@ -114,7 +111,7 @@ if (!String.prototype.startsWith) {
           $(this).removeClass("selected");
         });
         $("div.space").hide();
-        MemoProcessIdx.moveMemoFromIndex = -1;
+        // MemoProcessIdx.moveMemoFromIndex = -1;
         popupClose();
       };
 
