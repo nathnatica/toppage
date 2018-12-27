@@ -69,11 +69,12 @@
             flagInfo[flags[i]] = true;
           }
           if (flagInfo["lowp"] == true) { // low proprity memo
-            mediumPriorityMemoAddToIdx = Math.min(mediumPriorityMemoAddToIdx, j);
+            mediumPriorityMemoAddToIdx.set(Math.min(mediumPriorityMemoAddToIdx.get(), j));
           } else if (flagInfo["dict"] == true) { // to find first dictionary memo to add new dictionary
             dictMemoIdx.addtoSet(j);
             if (flagInfo["backup"] == true) {
               flagInfo["lowp"] = true;
+              mediumPriorityMemoAddToIdx.set(Math.min(mediumPriorityMemoAddToIdx.get(), j));
             }
           }
           rtn = rtn.replace(/^#.+\n/, '');
@@ -369,10 +370,10 @@
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
             } else { // for memo item
-              if (a.length - 1 < mediumPriorityMemoAddToIdx) {
+              if (a.length - 1 < mediumPriorityMemoAddToIdx.get()) {
                 a.push(m);
               } else {
-                a.splice(mediumPriorityMemoAddToIdx, 0, m);
+                a.splice(mediumPriorityMemoAddToIdx.get(), 0, m);
               }
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
