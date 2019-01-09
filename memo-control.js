@@ -36,7 +36,7 @@
           if (lines[j].length > 80) {
             flagInfo["longLine"] = true;
           }
-          makeMemoLink(lines[j], flagInfo);
+          m = makeMemoLink(m, lines[j], flagInfo);
           m = convertToDoItem(m, lines[j], i, j, flagInfo);
           m = convertDictItem(m, lines[j], i, j, flagInfo);
         }
@@ -98,7 +98,7 @@
         if (flagInfo["headLine"]) {
           b = b.replace(/^\*.+\n/, '');
         }
-        if (!flagInfo["todo"] && !flagInfo["dict"]) {
+        if (!flagInfo["link"] && !flagInfo["todo"] && !flagInfo["dict"]) {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
         }
         // return divHead + b.replace(/[\-]+\n/g, "</div><hr>" + divHead).replace(new RegExp('\n', 'g'), '<br>') + "</div></div>";
@@ -128,7 +128,7 @@
         return rtn;
       };
 
-      function makeMemoLink(line, flagInfo) {
+      function makeMemoLink(m, line, flagInfo) {
         if (flagInfo["link"]) {
           var match = line.match(/(.*)\((.*)\)/);
           if (match != undefined) {
@@ -139,9 +139,12 @@
               $(span).attr("ng-bind-html", key).appendTo($("#note"));
               var a = document.createElement('a');
               $(a).attr("href", link).attr("id", key).appendTo($("#note"));
+              var replaced = line.replace(key,"<b>" + key + "</b>&nbsp;&nbsp;");
+              return m.replace(line, replaced);
             }
           }
         }
+        return m;
       };
 
       function getHeadLine(line, flagInfo) {
