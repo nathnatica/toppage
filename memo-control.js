@@ -139,7 +139,8 @@
               $(span).attr("ng-bind-html", key).appendTo($("#note"));
               var a = document.createElement('a');
               $(a).attr("href", link).attr("id", key).appendTo($("#note"));
-              var replaced = line.replace(key,"<b>" + key + "</b>&nbsp;&nbsp;");
+              var key2 = key.padEnd(4, "_").replace(/_/g, "&nbsp;");
+              var replaced = line.replace(key,"<b>" + key2 + "</b>");
               return m.replace(line, replaced);
             }
           }
