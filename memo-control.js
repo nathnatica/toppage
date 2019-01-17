@@ -359,7 +359,7 @@
         });
 
         $('#confirm').click(function() {
-          var m = $('#areaValue').val();
+          var m = $('#areaValue').val().replace(/^「」/, "[]");
           if (m != null && m != "") {
             a = JSON.parse(localStorage.memo);
             if (m.startsWith("[]")) { // for TODO list item
