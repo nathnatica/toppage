@@ -96,7 +96,7 @@
         var divHead = getMemoDivHead(flagInfo);
         var b = m;
         if (flagInfo["headLine"]) {
-          b = b.replace(/^\*.+\n/, '');
+          b = b.replace(/^\*.+\n/, '').replace(/^\*.+$/,'');
         }
         if (!flagInfo["link"] && !flagInfo["todo"] && !flagInfo["dict"]) {
           b = b.replace(/>/g, "&gt;").replace(/</g, "&lt;");
