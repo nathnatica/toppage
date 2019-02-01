@@ -373,6 +373,68 @@
               a[firstIdx] = s.replace(/[\r\n]+/g, '\n');
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
+            } else if (m.startsWith("...") || m.startsWith("。。。")) { // for calendar item
+              var value = m.replace("。。。", "...").toHalfWidth();
+              var match = value.match(/^...[ 　]*(\S+)[ 　](.*)$/);
+              if (match != undefined) {
+                var time = match[1];
+                var title = match[2];
+                if (time != undefined && title != undefined) {
+                  if (time.match(/\d{4,12}/) != undefined) {
+                    var x = "";
+                    if (time.match(/[0-9]{12}/) != undefined) {
+                      x = time;
+                    } else if (time.match(/[0-9]{8}/) != undefined) {
+                      x = moment().year() + time;
+                    } else if (time.match(/[0-9]{6}/) != undefined) {
+                      x = moment().year() + time + "00";
+                    } else if (time.match(/[0-9]{4}/) != undefined) {
+                      x = moment().year() + time + "0000";
+                    } else {
+                      $.notify("wrong date format (YYYYMMDDHHmm, MMDDHHmm, MMDDHH, MMDD)", "error");
+                    }
+
+                    if (x.match(/\d{12}/)) {
+                      var start = moment(x, "YYYYMMDDHHmm").utc().format();
+                      // var start = "2019-02-01T03:00:00.000Z";
+                      var entity = {
+                        id: chance.guid(),
+                        title: title,
+                        isAllDay: false,
+                        start: start,
+                        end: start,
+                        category: "time",
+                        dueDateClass: "",
+                        color: "#ffffff",
+                        bgColor: "#9e5fff",
+                        dragBgColor: "#9e5fff",
+                        borderColor: "#9e5fff",
+                        location: "",
+                        raw: {class:"public"},
+                        state: "Busy",
+                        calendarId: "1"
+                      };
+
+                      var s = [];
+                      if (!localStorage.schedule) {
+                        localStorage.schedule = JSON.stringify([]);
+                      }
+                      s = JSON.parse(localStorage.schedule);
+                      s.push(entity);
+                      localStorage.schedule = JSON.stringify(s);
+                      location.href = location.href;
+                    } else {
+                      $.notify("wrong date format (" + x + ")", "error");
+                    }
+                  } else {
+                    $.notify("wrong date format (\\d{4,12})", "error");
+                  }
+                } else {
+                  $.notify("wrong calendar format (...TIME TITlE)", "error");
+                }
+              } else {
+                $.notify("wrong calendar format (...TIME TITlE)", "error");
+              }
             } else { // for memo item
               if (a.length - 1 < mediumPriorityMemoAddToIdx.get()) {
                 a.push(m);
