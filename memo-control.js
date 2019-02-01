@@ -380,23 +380,31 @@
                 var time = match[1];
                 var title = match[2];
                 if (time != undefined && title != undefined) {
-                  if (time.match(/\d{4,12}/) != undefined) {
+                  if (time.match(/^\d{4,12}$/) != undefined) {
                     var x = "";
-                    if (time.match(/[0-9]{12}/) != undefined) {
+                    if (time.match(/^\d{12}$/) != undefined) {
                       x = time;
-                    } else if (time.match(/[0-9]{8}/) != undefined) {
+                    } else if (time.match(/^\d{8}$/) != undefined) {
                       x = moment().year() + time;
-                    } else if (time.match(/[0-9]{6}/) != undefined) {
+                    } else if (time.match(/^\d{6}$/) != undefined) {
                       x = moment().year() + time + "00";
-                    } else if (time.match(/[0-9]{4}/) != undefined) {
+                    } else if (time.match(/^\d{4}$/) != undefined) {
                       x = moment().year() + time + "0000";
                     } else {
                       $.notify("wrong date format (YYYYMMDDHHmm, MMDDHHmm, MMDDHH, MMDD)", "error");
+                      return;
                     }
 
                     if (x.match(/\d{12}/)) {
-                      var start = moment(x, "YYYYMMDDHHmm").utc().format();
-                      // var start = "2019-02-01T03:00:00.000Z";
+                      var t = moment(x, "YYYYMMDDHHmm");
+                      var min = moment().add("-60", "days").startOf("day");
+                      var max = moment().add("120", "days").startOf("day");
+
+                      if (!t.isAfter(min) || !t.isBefore(max)) {
+                        $.notify("wrong date(" + x + ")range in(" + min.format() + " - " + max.format() + ")", "error");
+                        return;
+                      }
+                      var start = t.utc().format();
                       var entity = {
                         id: chance.guid(),
                         title: title,
