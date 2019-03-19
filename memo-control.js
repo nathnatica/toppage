@@ -107,7 +107,7 @@
 
       function getMemoDivHead(flagInfo) {
         var rtn = $("<div></div>");
-        if ((flagInfo["longMemo"] || flagInfo["longLine"] || flagInfo["dict"]) && !flagInfo["link"]) {
+        if ((flagInfo["longMemo"] || flagInfo["longLine"] || flagInfo["dict"]) && !flagInfo["link"] && !flagInfo["fixed"]) {
           rtn.addClass("long");
           if (flagInfo["longMemo"]) {
             rtn.addClass("scroll");
