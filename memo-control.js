@@ -113,9 +113,10 @@
             rtn.addClass("scroll");
           }
         }
-        if (flagInfo["highLight"]) {
-          rtn.addClass("highlight");
-        }
+        var colorArray = ["red","orange","yellow","lime","green","coral","skyblue","blue","purple","grey"];
+        colorArray.forEach(function (value){
+          flagInfo[value] && rtn.css("background-color", value);
+        });
         if (flagInfo["hide"]) {
           rtn.addClass("invisible");
         }

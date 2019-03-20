@@ -124,9 +124,6 @@ div#note div.scroll {
     overflow-y: scroll;
     height: 150px;
 }
-div#note div.highlight {
-    background-color: #ffff00;
-}
 div#note div.invisible {
     color: #CCCCCC;
 }
