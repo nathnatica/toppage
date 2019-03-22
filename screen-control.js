@@ -100,7 +100,9 @@ if (!String.prototype.startsWith) {
             $('div[id="' + value.substring(0, i) + '"]').not('#area').show();
           }
         }
-        $('div[id^="' + value + '"]').not('#area').show();
+        if (value != 'p') { // not to show popup_outer layer when 'p' pressed
+          $('div[id^="' + value + '"]').not('#area').show();
+        }
       };
 
       function processEsc() {
