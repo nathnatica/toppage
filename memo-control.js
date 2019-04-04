@@ -161,11 +161,13 @@
         if (line.startsWith("[]") || line.startsWith("[v]")) {
           flagInfo["todo"] = true;
           var delCheck = "<span onclick='memoControl.delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>"
+          var upTodo = "<span onclick='memoControl.upTodo(" + i + "," + j + ")' class='updown'>[↑]</span>";
+          var downTodo = "<span onclick='memoControl.downTodo(" + i + "," + j + ")' class='updown'>[↓]</span>";
           if (line.startsWith("[]")) {
-            var replaced = line.replace("[]", "<span onclick='memoControl.check(" + i + "," + j + ")' class='unchecked'>[ ]&nbsp;") + "</span>" + delCheck;
+            var replaced = line.replace("[]", "<span onclick='memoControl.check(" + i + "," + j + ")' class='unchecked'>[ ]&nbsp;") + "</span>" + delCheck + upTodo + downTodo;
             return m.replace(line, replaced);
           } else if (line.startsWith("[v]")) {
-            var replaced = line.replace("[v]", "<span onclick='memoControl.uncheck(" + i + "," + j + ")' class='checked'>[v]&nbsp;") + "</span>" + delCheck;
+            var replaced = line.replace("[v]", "<span onclick='memoControl.uncheck(" + i + "," + j + ")' class='checked'>[v]&nbsp;") + "</span>"  + delCheck + upTodo + downTodo;
             return m.replace(line, replaced);
           }
         } else {
@@ -307,7 +309,15 @@
         moveMemoLineTo(i, j, to);
       };
 
-      function moveMemoLineTo(i, j, to) {
+      function downTodo(i, j) {
+        moveMemoLineTo(i, j, i, j+1);
+      };
+
+      function upTodo(i, j) {
+        moveMemoLineTo(i, j, i, j-1);
+      };
+
+      function moveMemoLineTo(i, j, to, toj) {
         if (i != to) {
           // delete from
           var a = JSON.parse(localStorage.memo);
@@ -325,6 +335,29 @@
 
           localStorage.memo = JSON.stringify(a);
           location.href = location.href;
+        } else {
+          var a = JSON.parse(localStorage.memo);
+          var todo = a[i];
+          var lines = todo.split(/\r\n|\n|\r/gm);
+          if (lines[0].startsWith("#")) {
+            lines.shift();
+          }
+          var fromLine = lines[j];
+          var toLine = lines[toj];
+
+          if (toLine != undefined && !toLine.startsWith("*")) {
+            console.log(fromLine);
+            console.log(toLine);
+            if (j < toj) {
+              console.log("down")
+              a[i] = todo.replace(toLine, "_TMP_").replace("_TMP_", fromLine).replace(fromLine, toLine);
+            } else {
+              a[i] = todo.replace(fromLine, "_TMP_").replace("_TMP_", toLine).replace(toLine, fromLine);
+              console.log("up")
+            }
+            localStorage.memo = JSON.stringify(a);
+            location.href = location.href;
+          }
         }
       };
 
@@ -478,6 +511,8 @@
       delcheck: delcheck,
       down: down,
       up: up,
+      downTodo: downTodo,
+      upTodo: upTodo,
       init: init
     };
   };
