@@ -1,9 +1,9 @@
 // to use case insensitive search at contains method
-$.expr[":"].contains = $.expr.createPseudo(function(args) {
-  return function(elem) {
-    return $(elem).text().toUpperCase().indexOf(args.toUpperCase()) >= 0;
-  }
-});
+// $.expr[":"].contains = $.expr.createPseudo(function(args) {
+//   return function(elem) {
+//     return $(elem).text().toUpperCase().indexOf(args.toUpperCase()) >= 0;
+//   }
+// });
 
 // ie not support String.startsWith
 if (!String.prototype.startsWith) {
@@ -86,6 +86,14 @@ if (!String.prototype.startsWith) {
           });
           $('#add').hide();
           if (searchValue.length > 0) {
+
+            // to use case insensitive search at contains method
+            $.expr[":"].contains = $.expr.createPseudo(function(args) {
+              return function(elem) {
+                return $(elem).text().toUpperCase().indexOf(args.toUpperCase()) >= 0;
+              }
+            });
+
             $("#note > div:contains(" + searchValue + ")").not(".space").each(function() {
               $('#note').show();
               $(this).show();
