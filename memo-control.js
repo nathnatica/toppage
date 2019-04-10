@@ -186,9 +186,9 @@
                 var downDict = "<span onclick='memoControl.down(" + i + "," + j + ")' class='updown'>[↓]</span>";
                 var upDict = "<span onclick='memoControl.up(" + i + "," + j + ")' class='updown'>[↑]</span>";
                 var delDict = "<span onclick='memoControl.delcheck(" + i + "," + j + ")' class='delcheck'>[X]</span>";
-                var replaced = line
+                var replaced = delDict + upDict + downDict + line
                 .replace(word, "<span class='word'>" + word + "</span>")
-                .replace(desc, "<span class='desc'>" + desc + "</span>") + delDict + upDict + downDict;
+                .replace(desc, "<span class='desc'>" + desc + "</span>");
                 return m.replace(line, replaced);
               }
             }

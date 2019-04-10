@@ -39,13 +39,13 @@ span.unchecked {
 span.delcheck {
     /* background-color: #E6E6E6; */
     font-weight: normal;
-    float: right;
+    float: left;
     color: black;
 }
 span.updown {
     /* background-color: #E6E6E6; */
     font-weight: normal;
-    float: right;
+    float: left;
     color: black;
 }
 span.invisible {
