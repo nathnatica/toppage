@@ -26,16 +26,24 @@
 
       function notifyShow(title, m, now, style) {
         if (m.isAfter(now)) {
+
           var days = m.diff(now, 'days');
           var hours = m.diff(now, 'hours');
           var minutes = m.diff(now, 'minutes');
+
+          var oriHours = m.hours();
+          var oriMinutes = m.minutes();
 
           if (days <= 10) {
             var truncated = m.startOf('day');
             var nowTruncated = moment().startOf('day');
             var diffDays = truncated.diff(nowTruncated, 'days');
             m.startOf('second');
-            if (diffDays >= 1) {
+
+            // console.log(m.local());
+            if (diffDays == 0 && oriHours == 23 && oriMinutes == 59) {
+              $.notify(title + " (Today!)", style);
+            } else if (diffDays >= 1) {
               $.notify(title + " (" + diffDays + " days after)", style);
             } else if (hours >= 2) {
               var remainMinToHour = Math.trunc((minutes % 60) / 60 * 10);
@@ -129,16 +137,21 @@
                 addIfPassed(m, now, 'month'); // might be a problem (in case of day+1 and month+1)
               }
 
-              if (hour != "*") {
-                m.hours(hour);
-                addIfPassed(m, now, 'day');
-              }
-
-              if (minute != "*") {
-                m.minutes(minute);
-                addIfPassed(m, now, 'hour');
+              if (hour == "*" && minute == "*") {
+                m.hours(23);
+                m.minutes(59);
               } else {
-                m.minutes(0);
+                if (hour != "*") {
+                  m.hours(hour);
+                  addIfPassed(m, now, 'day');
+                }
+
+                if (minute != "*") {
+                  m.minutes(minute);
+                  addIfPassed(m, now, 'hour');
+                } else {
+                  m.minutes(0);
+                }
               }
 
               if (notifyAddUnit != null) {
@@ -154,7 +167,7 @@
                 m.add(1, notifyAddUnit);
               }
 
-              // console.debug("NEXT MEMO SCHEDULE : " + title + "(" + m.local().format() + ")");
+              console.debug("NEXT MEMO SCHEDULE : " + title + "(" + m.local().format() + ")");
 
               notifyShow(title, m, now, 'success');
             }
