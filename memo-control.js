@@ -75,6 +75,9 @@
             if (flagInfo["backup"] == true) {
               flagInfo["lowp"] = true;
               mediumPriorityMemoAddToIdx.set(Math.min(mediumPriorityMemoAddToIdx.get(), j));
+            } else {
+              // no scroll
+              flagInfo["longMemo"] = false;
             }
           }
           rtn = rtn.replace(/^#.+\n/, '');
@@ -403,7 +406,7 @@
               location.href = location.href;
             } else if ((m.startsWith("??") || m.startsWith("？？")) && dictMemoIdx.size() != 0) { // for dictionay item
               var firstIdx = dictMemoIdx.getFirst();
-              var s = a[firstIdx] + "\n" + m.replace(/[\?？]/g,'');
+              var s = a[firstIdx] + "\n" + m.replace(/[\?？]/g,'').replace(/　/g,' ');
               a[firstIdx] = s.replace(/[\r\n]+/g, '\n');
               localStorage.memo = JSON.stringify(a);
               location.href = location.href;
