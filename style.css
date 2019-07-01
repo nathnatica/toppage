@@ -246,3 +246,30 @@ div.memoHead.selected:before {
     top: 10px;
     right: 10px;
 }
+
+/* for help page */
+
+thead {
+    background-color: orange;
+}
+
+th.key {
+	padding: 5px;
+}
+
+th.val {
+	padding: 5px;
+}
+
+td.key {
+    background-color: white;
+	padding: 5px;
+}
+
+td.val {
+    background-color: white;
+	padding: 5px;
+}
+
+
+
